@@ -1,53 +1,71 @@
 from flask import Flask, render_template, request
 import smtplib
 from email.mime.text import MIMEText
+import os
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    if request.method == "POST":
+# Pega do Render (Environment Variables)
+EMAIL = os.getenv("EMAIL")
+SENHA = os.getenv("SENHA")
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/enviar", methods=["POST"])
+def enviar():
+    try:
         nome = request.form.get("nome")
-        tipo_produto = request.form.get("tipo_produto")
-        link_produto = request.form.get("link_produto")
-        tipo_camisa = request.form.get("tipo_camisa")
+        produto = request.form.get("produto")
+        link = request.form.get("link")
+
+        personalizacao = request.form.get("personalizacao")
         nome_personalizado = request.form.get("nome_personalizado")
         numero = request.form.get("numero")
-        tamanho = request.form.get("tamanho")
 
+        tamanho_chuteira = request.form.get("tamanho_chuteira")
+
+        # Montar mensagem
         mensagem = f"""
-NOVO PEDIDO LS IMPORTS
+        NOVO PEDIDO - LS IMPORTS
 
-NOME: {nome}
-TIPO PRODUTO: {tipo_produto}
-LINK PRODUTO: {link_produto}
-TIPO CAMISA: {tipo_camisa}
-NOME PERSONALIZADO: {nome_personalizado}
-NUMERO: {numero}
-TAMANHO CHUTEIRA: {tamanho}
-"""
+        Nome: {nome}
+        Produto: {produto}
+        Link: {link}
+        """
 
-        remetente = "LSIMPORTS.FAQ@GMAIL.COM"
-        senha = "kuzjrrchxzoxihoz"
-        destinatario = "LSIMPORTS.FAQ@GMAIL.COM"
+        if produto == "Camisa" and personalizacao == "Sim":
+            mensagem += f"""
+            Personalização:
+            Nome: {nome_personalizado}
+            Número: {numero}
+            """
 
+        if produto == "Chuteira":
+            mensagem += f"""
+            Tamanho da chuteira: {tamanho_chuteira}
+            """
+
+        # Configuração do e-mail
         msg = MIMEText(mensagem)
-        msg["Subject"] = "NOVO PEDIDO LS IMPORTS"
-        msg["From"] = remetente
-        msg["To"] = destinatario
+        msg["Subject"] = "NOVO PEDIDO - LS IMPORTS"
+        msg["From"] = EMAIL
+        msg["To"] = EMAIL
 
-        try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(remetente, senha)
-            server.send_message(msg)
-            server.quit()
-        except Exception as e:
-            print("Erro ao enviar email:", e)
+        servidor = smtplib.SMTP("smtp.gmail.com", 587)
+        servidor.starttls()
+        servidor.login(EMAIL, SENHA)
+        servidor.sendmail(EMAIL, EMAIL, msg.as_string())
+        servidor.quit()
 
-        return render_template("index.html", sucesso=True)
+        return render_template("sucesso.html")
 
-    return render_template("index.html")
+    except Exception as e:
+        print("ERRO:", e)
+        return f"Erro interno: {e}"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
