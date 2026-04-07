@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LS IMPORTS</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+    margin: 0;
+}
+
+.container {
+    max-width: 100%;
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    font-size: 22px;
+}
+
+.instructions {
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: green;
+    color: white;
+    font-size: 16px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.section {
+    margin-top: 15px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="card">
+
+<h1>LS IMPORTS</h1>
+
+<button onclick="abrirCatalogo()">🔎 VER CATÁLOGO</button>
+
+<div class="instructions">
+<b>COMO FAZER O PEDIDO:</b><br>
+1. CLIQUE EM VER CATÁLOGO<br>
+2. ESCOLHA O PRODUTO<br>
+3. COPIE O LINK DO PRODUTO<br>
+4. COLE NO CAMPO ABAIXO
+</div>
+
+<form method="POST">
+
+<input type="text" name="nome" placeholder="SEU NOME" required>
+
+<input type="text" name="link_produto" placeholder="COLE AQUI O LINK DO PRODUTO" required>
+
+<select name="tipo_produto" onchange="mostrarCampos(this.value)">
+<option value="CAMISA">CAMISA</option>
+<option value="CHUTEIRA">CHUTEIRA</option>
+</select>
+
+<!-- CAMISA -->
+<div id="camisa" class="section">
+<select name="tipo_camisa" onchange="mostrarPersonalizacao(this.value)">
+<option value="SEM PERSONALIZAÇÃO">SEM PERSONALIZAÇÃO</option>
+<option value="PERSONALIZADA">PERSONALIZADA</option>
+</select>
+
+<div id="personalizacao" style="display:none;">
+<input type="text" name="nome_personalizado" placeholder="NOME NA CAMISA">
+<input type="text" name="numero" placeholder="NÚMERO">
+</div>
+</div>
+
+<!-- CHUTEIRA -->
+<div id="chuteira" class="section" style="display:none;">
+<select name="tamanho">
+<option value="">SELECIONE O TAMANHO</option>
+<option>36</option><option>37</option><option>38</option><option>39</option>
+<option>40</option><option>41</option><option>42</option><option>43</option><option>44</option>
+</select>
+</div>
+
+<button type="submit">ENVIAR PEDIDO</button>
+
+</form>
+
+{% if sucesso %}
+<p style="color:red; text-align:center; margin-top:15px;">
+PARA CONFIRMAR O PEDIDO ENTRE EM CONTATO CONOSCO VIA WHATSAPP PARA PAGAMENTO
+</p>
+
+<button onclick="abrirWhats()">IR PARA WHATSAPP</button>
+{% endif %}
+
+</div>
+</div>
+
+<script>
+function abrirCatalogo(){
+    window.open("https://x.yupoo.com/photos/194939/categories","_blank");
+}
+
+function mostrarPersonalizacao(valor){
+    let div = document.getElementById("personalizacao");
+    div.style.display = valor === "PERSONALIZADA" ? "block" : "none";
+}
+
+function mostrarCampos(valor){
+    let camisa = document.getElementById("camisa");
+    let chuteira = document.getElementById("chuteira");
+
+    if(valor === "CAMISA"){
+        camisa.style.display = "block";
+        chuteira.style.display = "none";
+    } else {
+        camisa.style.display = "none";
+        chuteira.style.display = "block";
+    }
+}
+
+function abrirWhats(){
+    let msg = "Enviei meu pedido, gostaria de fazer o pagamento";
+    window.open(`https://wa.me/5562998286167?text=${msg}`);
+}
+</script>
+
+</body>
+</html>
